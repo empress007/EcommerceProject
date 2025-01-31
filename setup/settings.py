@@ -42,8 +42,14 @@ else:
 DEBUG = True
 
 
-ALLOWED_HOSTS = []  # For local development
-# ALLOWED_HOSTS = ["*"] 
+# ALLOWED_HOSTS = []  # For local development
+ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = [
+#     'ecommerceproject-cmap.onrender.com',
+#     '127.0.0.1',  # Keep this for local development
+#     'localhost'
+# ]
+
 
 
 # Application definition
