@@ -223,49 +223,49 @@ def cart(request):
         'order': order,
     }
     return render (request, 'pages/cart.html', context)
-import uuid
-from django.shortcuts import render, redirect
-from django.conf import settings
-from paystackapi.transaction import Transaction
+# import uuid
+# from django.shortcuts import render, redirect
+# from django.conf import settings
+# # from paystackapi.transaction import Transaction
 
-def checkout(request):
-    order = Order.objects.filter(customer=request.user, complete=False).first()
-    if request.method == "POST":
-        transaction_ref = str(uuid.uuid4())  # Generate a unique transaction reference
-        amount = int(order.get_cart_total * 100)  # Amount in kobo/cents
+# def checkout(request):
+#     order = Order.objects.filter(customer=request.user, complete=False).first()
+#     if request.method == "POST":
+#         transaction_ref = str(uuid.uuid4())  # Generate a unique transaction reference
+#         amount = int(order.get_cart_total * 100)  # Amount in kobo/cents
 
-        # Pass transaction data to Paystack
-        response = Transaction.initialize(
-            reference=transaction_ref,
-            email=request.user.email,
-            amount=amount,
-            callback_url=request.build_absolute_uri('/verify-payment/'),
-        )
-        return redirect(response['data']['authorization_url'])  # Redirect to Paystack
+#         # Pass transaction data to Paystack
+#         response = Transaction.initialize(
+#             reference=transaction_ref,
+#             email=request.user.email,
+#             amount=amount,
+#             callback_url=request.build_absolute_uri('/verify-payment/'),
+#         )
+#         return redirect(response['data']['authorization_url'])  # Redirect to Paystack
 
-    items = order.orderitem_set.all()
-    context = {
-        'items': items,
-        'order': order,
-        'paystack_public_key': settings.PAYSTACK_PUBLIC_KEY,
-    }
-    return render(request, 'checkout.html', context)
+#     items = order.orderitem_set.all()
+#     context = {
+#         'items': items,
+#         'order': order,
+#         'paystack_public_key': settings.PAYSTACK_PUBLIC_KEY,
+#     }
+#     return render(request, 'checkout.html', context)
 
 
-from django.http import JsonResponse
-from paystackapi.transaction import Transaction
+# from django.http import JsonResponse
+# from paystackapi.transaction import Transaction
 
-def verify_payment(request):
-    reference = request.GET.get('reference')
-    response = Transaction.verify(reference=reference)
-    if response['status'] == True:
-        # Update the order to complete
-        order = Order.objects.get(transaction_id=reference)
-        order.complete = True
-        order.save()
+# def verify_payment(request):
+#     reference = request.GET.get('reference')
+#     response = Transaction.verify(reference=reference)
+#     if response['status'] == True:
+#         # Update the order to complete
+#         order = Order.objects.get(transaction_id=reference)
+#         order.complete = True
+#         order.save()
 
-        return JsonResponse({'status': 'success', 'message': 'Payment successful!'})
-    return JsonResponse({'status': 'failure', 'message': 'Payment failed. Please try again.'})
+#         return JsonResponse({'status': 'success', 'message': 'Payment successful!'})
+#     return JsonResponse({'status': 'failure', 'message': 'Payment failed. Please try again.'})
 
 
 
